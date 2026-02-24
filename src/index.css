@@ -1,0 +1,314 @@
+/* stylelint-disable */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+    /* Indian Government Design System - Light Mode */
+    /* Ashoka Chakra Blue as primary - represents authority and trust */
+    --background: 0 0% 100%;
+    --foreground: 240 100% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 100% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 100% 10%;
+    --primary: 240 100% 25%;
+    /* Ashoka Chakra Navy Blue */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 25 100% 60%;
+    /* Saffron from Indian flag */
+    --secondary-foreground: 240 100% 10%;
+    --accent: 130 100% 28%;
+    /* Green from Indian flag */
+    --accent-foreground: 0 0% 100%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 240 100% 25%;
+    --chart-1: 240 100% 25%;
+    /* Navy Blue */
+    --chart-2: 25 100% 60%;
+    /* Saffron */
+    --chart-3: 130 100% 28%;
+    /* Green */
+    --chart-4: 200 80% 50%;
+    /* Sky Blue */
+    --chart-5: 45 90% 55%;
+    /* Gold */
+    --sidebar-background: 240 100% 25%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 25 100% 60%;
+    --sidebar-primary-foreground: 240 100% 10%;
+    --sidebar-accent: 240 100% 20%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 240 100% 20%;
+    --sidebar-ring: 25 100% 60%;
+  }
+
+  .dark {
+    /* Indian Government Design System - Dark Mode */
+    --background: 240 100% 8%;
+    --foreground: 0 0% 98%;
+    --card: 240 100% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 100% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 240 100% 70%;
+    /* Lighter blue for dark mode */
+    --primary-foreground: 240 100% 10%;
+    --secondary: 25 100% 65%;
+    /* Lighter saffron */
+    --secondary-foreground: 240 100% 10%;
+    --accent: 130 100% 35%;
+    /* Lighter green */
+    --accent-foreground: 0 0% 100%;
+    --muted: 240 50% 15%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 50% 20%;
+    --input: 240 50% 20%;
+    --ring: 240 100% 70%;
+    --chart-1: 240 100% 70%;
+    /* Light Navy Blue */
+    --chart-2: 25 100% 65%;
+    /* Light Saffron */
+    --chart-3: 130 100% 40%;
+    /* Light Green */
+    --chart-4: 200 80% 60%;
+    /* Light Sky Blue */
+    --chart-5: 45 90% 65%;
+    /* Light Gold */
+    --sidebar-background: 240 100% 10%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 25 100% 65%;
+    --sidebar-primary-foreground: 240 100% 10%;
+    --sidebar-accent: 240 100% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 50% 20%;
+    --sidebar-ring: 25 100% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* High readability for government services */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  /* Kiosk-friendly large touch targets */
+  button,
+  a {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+}
+
+@layer base {
+  @keyframes sj-emblem-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes sj-notif-pulse {
+
+    0%,
+    100% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.4);
+    }
+  }
+
+  @keyframes sj-ai-glow {
+
+    0%,
+    100% {
+      box-shadow: 0 4px 18px rgba(14, 94, 101, 0.35);
+    }
+
+    50% {
+      box-shadow: 0 4px 28px rgba(14, 94, 101, 0.6);
+    }
+  }
+
+  @keyframes sj-toast-in {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(16px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+}
+
+@layer utilities {
+
+  /* Tricolor gradient for special elements */
+  .gradient-tricolor {
+    background: linear-gradient(135deg,
+        hsl(var(--secondary)) 0%,
+        hsl(var(--background)) 50%,
+        hsl(var(--accent)) 100%);
+  }
+
+  /* Skip to content link */
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+
+  .sj-senior-mode {
+    font-size: 115%;
+  }
+
+  .sj-senior-mode button,
+  .sj-senior-mode a,
+  .sj-senior-mode input,
+  .sj-senior-mode select,
+  .sj-senior-mode textarea {
+    font-size: 1.1em;
+    min-height: 48px;
+    /* Minimum touch target size for senior citizens */
+  }
+
+  .sj-senior-mode :focus-visible {
+    outline-width: 4px;
+    outline-offset: 2px;
+  }
+
+  /* Government badge styling */
+  .badge-govt {
+    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold;
+    @apply border-primary/20 bg-primary/10 text-primary;
+  }
+
+  /* High contrast mode for accessibility - User Requested: Black BG, Yellow/White Text, Thick Borders */
+  .high-contrast {
+    --foreground: 60 100% 50%;
+    /* Pure Yellow */
+    --background: 0 0% 0%;
+    /* Pure Black */
+    --card: 0 0% 0%;
+    --card-foreground: 60 100% 50%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 60 100% 50%;
+    --primary: 60 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 100%;
+    /* White */
+    --secondary-foreground: 0 0% 0%;
+    --accent: 60 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 100%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 60 100% 50%;
+    --input: 0 0% 0%;
+    --ring: 60 100% 50%;
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 60 100% 50%;
+    --sidebar-border: 60 100% 50%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 60 100% 50%;
+  }
+
+  .high-contrast * {
+    border-width: 2px !important;
+    /* Thick borders */
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+
+  .high-contrast button,
+  .high-contrast a {
+    border-width: 3px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+  }
+
+  .high-contrast input {
+    border-width: 3px !important;
+    background: black !important;
+    color: yellow !important;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Google Translate Magic Overrides */
+  .goog-te-banner-frame,
+  .goog-te-balloon-frame,
+  #goog-gt-tt,
+  .goog-te-spinner-pos,
+  .goog-te-spinner-animation,
+  iframe.skiptranslate {
+    display: none !important;
+  }
+
+  body {
+    top: 0px !important;
+    position: static !important;
+  }
+
+  html {
+    height: 100% !important;
+  }
+
+  .goog-tooltip {
+    display: none !important;
+  }
+
+  .goog-tooltip:hover {
+    display: none !important;
+  }
+
+  .goog-text-highlight {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
