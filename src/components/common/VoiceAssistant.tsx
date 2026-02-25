@@ -23,16 +23,18 @@ export default function VoiceAssistant({ onSendMessage, onReceiveResponse }: Voi
     callbacksRef.current = { onSendMessage, onReceiveResponse, setIsSpeaking };
   }, [onSendMessage, onReceiveResponse, setIsSpeaking]);
 
-  useEffect(() => {
+  const initRecognition = () => {
+    if (recognitionRef.current) return recognitionRef.current;
+    
     if (typeof window !== 'undefined') {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (SpeechRecognition) {
-        recognitionRef.current = new SpeechRecognition();
-        recognitionRef.current.continuous = false;
-        recognitionRef.current.interimResults = false;
-        recognitionRef.current.lang = 'en-IN';
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-IN';
 
-        recognitionRef.current.onresult = async (event: any) => {
+        recognition.onresult = async (event: any) => {
           const text = event.results[0][0].transcript;
           callbacksRef.current.onSendMessage(text);
 
@@ -54,34 +56,23 @@ export default function VoiceAssistant({ onSendMessage, onReceiveResponse }: Voi
               }),
             });
 
-            if (!response.ok) {
-               throw new Error('API Error');
-            }
+            if (!response.ok) throw new Error('API Error');
 
             const data = await response.json();
             const reply = data.choices[0].message.content;
             
-            // Speak the response aloud using the free browser SpeechSynthesis API
             if ('speechSynthesis' in window) {
-              window.speechSynthesis.cancel(); // Stop any ongoing speech
+              window.speechSynthesis.cancel();
               callbacksRef.current.setIsSpeaking(false);
-              
-              // Clean out markdown characters (asterisks, hashtags, backticks) that speech synthesis sounds out
               const cleanTextForSpeech = reply.replace(/[*#`_]/g, '');
-              
               const utterance = new SpeechSynthesisUtterance(cleanTextForSpeech);
-              // Set language (can adapt depending on context, using en-IN/hi-IN natively provided by browser)
               utterance.lang = 'en-IN'; 
-              
               utterance.onstart = () => callbacksRef.current.setIsSpeaking(true);
               utterance.onend = () => callbacksRef.current.setIsSpeaking(false);
               utterance.onerror = () => callbacksRef.current.setIsSpeaking(false);
-              
               window.speechSynthesis.speak(utterance);
             }
-
             callbacksRef.current.onReceiveResponse(reply);
-
           } catch (error) {
             console.error('Voice Assistant API Error:', error);
             callbacksRef.current.onReceiveResponse("Sorry, I encountered an error processing your voice request.");
@@ -89,7 +80,7 @@ export default function VoiceAssistant({ onSendMessage, onReceiveResponse }: Voi
           }
         };
 
-        recognitionRef.current.onerror = (event: any) => {
+        recognition.onerror = (event: any) => {
           console.error("Speech recognition error", event.error);
           setIsListening(false);
           if (event.error !== 'no-speech' && event.error !== 'aborted') {
@@ -97,13 +88,15 @@ export default function VoiceAssistant({ onSendMessage, onReceiveResponse }: Voi
           }
         };
 
-        recognitionRef.current.onend = () => {
-          setIsListening(false);
-        };
-      } else {
-        console.warn("Speech recognition not supported");
+        recognition.onend = () => setIsListening(false);
+        recognitionRef.current = recognition;
+        return recognition;
       }
     }
+    return null;
+  };
+
+  useEffect(() => {
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.abort();
@@ -112,16 +105,19 @@ export default function VoiceAssistant({ onSendMessage, onReceiveResponse }: Voi
   }, []);
 
   const toggleListening = () => {
-    if (!recognitionRef.current) {
+    const recognition = initRecognition();
+    if (!recognition) {
       toast.error('Voice recognition is not supported in this browser.');
       return;
     }
+
     if (isListening) {
-      recognitionRef.current.stop();
+      recognition.stop();
       setIsListening(false);
     } else {
       try {
-        recognitionRef.current.start();
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        recognition.start();
         setIsListening(true);
       } catch (e) {
         console.error("speech error", e);

@@ -63,26 +63,25 @@ export function useAccessibility() {
 
         if (!screenReader) return;
 
-        const handleFocus = (e: FocusEvent) => {
+        const handleClick = (e: MouseEvent) => {
             if (!screenReader) return;
             const target = e.target as HTMLElement;
-            const text = target.ariaLabel || target.title || target.innerText || target.getAttribute('placeholder');
-            if (text) speak(text);
+            // Get text from the clicked element or its nearest interactive parent
+            const interactiveEl = target.closest('button, a, input, [role="button"]') || target;
+            const text = interactiveEl.getAttribute('aria-label') || 
+                         interactiveEl.getAttribute('title') || 
+                         (interactiveEl as HTMLElement).innerText || 
+                         interactiveEl.getAttribute('placeholder');
+            
+            if (text && text.length < 200) { // Limit length to avoid reading huge chunks
+                speak(text);
+            }
         };
 
-        const handleTouch = (e: TouchEvent) => {
-            if (!screenReader) return;
-            const target = e.target as HTMLElement;
-            const text = target.ariaLabel || target.title || target.innerText || target.getAttribute('placeholder');
-            if (text) speak(text);
-        };
-
-        window.addEventListener('focusin', handleFocus);
-        window.addEventListener('touchstart', handleTouch);
+        window.addEventListener('click', handleClick);
 
         return () => {
-            window.removeEventListener('focusin', handleFocus);
-            window.removeEventListener('touchstart', handleTouch);
+            window.removeEventListener('click', handleClick);
         };
     }, [highContrast, screenReader, speak]);
 

@@ -13,7 +13,7 @@ interface AuthContextType {
   signInWithEmail: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUpWithEmail: (email: string, password: string, fullName: string, phone?: string, role?: string) => Promise<{ error: Error | null }>;
   sendOTP: (identifier: string, type: 'email' | 'phone') => Promise<{ error: Error | null }>;
-  verifyOTP: (identifier: string, otp: string) => Promise<{ error: Error | null }>;
+  verifyOTP: (identifier: string, otp: string, fullName?: string, mode?: 'login' | 'register') => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   timeLeft: number;
@@ -255,39 +255,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const verifyOTP = async (identifier: string, otp: string) => {
+  const verifyOTP = async (identifier: string, otp: string, fullName?: string, mode: 'login' | 'register' = 'login') => {
     try {
       const { data, error } = await supabase.functions.invoke('verify_otp', {
-        body: { identifier, otp },
+        body: { identifier, otp, fullName, mode },
       });
 
       if (error) throw error;
       
       // After OTP verification, if the edge function says we can login, 
-      // it means it set a temporary password (the OTP itself) for us.
-      if (data?.canLogin) {
-        console.log('OTP verified, attempting login with temporary password...');
+      // it provides the deterministic password for us to sign in securely.
+      if (data?.canLogin && data?.secretPassword) {
+        console.log('OTP verified, attempting secure login...', { 
+          type: data.type, 
+          useIdentifier: data.loginIdentifier 
+        });
         
-        // Try both phone and email sign in since we are using a hack
         let signInResult;
-        if (data.type === 'phone') {
-           signInResult = await supabase.auth.signInWithPassword({
-            phone: identifier,
-            password: otp,
+        const loginId = data.loginIdentifier || identifier;
+        
+        // Determine if we should sign in with phone or email based on the returned identifier
+        if (loginId.includes('@')) {
+          console.log('Signing in with email credential:', loginId);
+          signInResult = await supabase.auth.signInWithPassword({
+            email: loginId,
+            password: data.secretPassword,
           });
         } else {
-           signInResult = await supabase.auth.signInWithPassword({
-            email: identifier,
-            password: otp,
+          // Ensure phone has + prefix for Supabase consistency
+          const e164Phone = loginId.startsWith('+') ? loginId : `+${loginId}`;
+          console.log('Signing in with phone credential:', e164Phone);
+          signInResult = await supabase.auth.signInWithPassword({
+            phone: e164Phone,
+            password: data.secretPassword,
           });
         }
 
         if (signInResult.error) {
-          console.error('Login with temporary password failed:', signInResult.error);
+          console.error('Login with secret password failed:', signInResult.error);
           throw signInResult.error;
         }
         
-        console.log('Login successful with temporary password');
+        console.log('Login successful with secure deterministic password');
       }
 
       return { error: null };

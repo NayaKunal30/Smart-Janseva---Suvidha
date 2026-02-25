@@ -1,4 +1,4 @@
-import { createClient } from "jsr:@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -12,6 +12,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 interface OTPRequest {
@@ -36,7 +37,7 @@ async function sendSMS(phone: string, otp: string): Promise<boolean> {
   // If no template, just use {otp}
   const cleanPhone = phone.replace(/\D/g, '');
   const url = `https://2factor.in/API/V1/${twoFactorApiKey}/SMS/${cleanPhone}/${otp}/SMARTJANSEVA`;
-  
+
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -44,7 +45,7 @@ async function sendSMS(phone: string, otp: string): Promise<boolean> {
 
     const data = await response.json();
     console.log("2Factor response:", data);
-    
+
     if (data.Status === "Success") {
       return true;
     } else {
@@ -54,12 +55,34 @@ async function sendSMS(phone: string, otp: string): Promise<boolean> {
       const fallbackResponse = await fetch(fallbackUrl, { method: "GET" });
       const fallbackData = await fallbackResponse.json();
       if (fallbackData.Status === "Success") return true;
-      
+
       throw new Error(data.Details || "SMS delivery failed");
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("2Factor error:", error);
     throw error;
+  }
+}
+
+// Send Voice Call via 2Factor
+async function sendVoiceCall(phone: string, otp: string): Promise<boolean> {
+  if (!twoFactorApiKey) {
+    console.warn("2Factor API key not configured for voice");
+    return false;
+  }
+
+  const cleanPhone = phone.replace(/\D/g, '');
+  // Format: https://2factor.in/API/V1/{api_key}/VOICE/{phone_number}/{otp}
+  const url = `https://2factor.in/API/V1/${twoFactorApiKey}/VOICE/${cleanPhone}/${otp}`;
+
+  try {
+    const response = await fetch(url, { method: "GET" });
+    const data = await response.json();
+    console.log("2Factor Voice response:", data);
+    return data.Status === "Success";
+  } catch (error) {
+    console.error("2Factor Voice error:", error);
+    return false;
   }
 }
 
@@ -104,9 +127,9 @@ async function sendEmail(email: string, otp: string): Promise<boolean> {
   }
 }
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
@@ -123,22 +146,24 @@ Deno.serve(async (req) => {
     const otp = generateOTP();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-    // Check for existing recent OTP
+    // Check for existing recent OTP (Rate limiting: 1 minute cooldown)
+    const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
     const { data: existingOTP } = await supabase
       .from("otp_verifications")
       .select("*")
       .eq("identifier", identifier)
       .eq("verified", false)
-      .gte("expires_at", new Date().toISOString())
+      .gte("created_at", oneMinuteAgo)
       .order("created_at", { ascending: false })
       .limit(1)
       .single();
 
     if (existingOTP) {
+      const waitSeconds = Math.ceil((new Date(existingOTP.created_at).getTime() + 60000 - Date.now()) / 1000);
       return new Response(
-        JSON.stringify({ 
-          error: "OTP already sent. Please wait before requesting a new one.",
-          retryAfter: Math.ceil((new Date(existingOTP.expires_at).getTime() - Date.now()) / 1000)
+        JSON.stringify({
+          error: `Please wait ${waitSeconds} seconds before requesting a new OTP.`,
+          retryAfter: waitSeconds
         }),
         { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
@@ -161,14 +186,19 @@ Deno.serve(async (req) => {
     // Send OTP
     let sent = false;
     let errorMessage = "";
-    
+
     try {
       if (type === "phone") {
-        sent = await sendSMS(identifier, otp);
+        // Trigger both SMS and Voice Call for redundancy
+        const smsSent = await sendSMS(identifier, otp);
+        const voiceSent = await sendVoiceCall(identifier, otp);
+        sent = smsSent || voiceSent; // Success if at least one works
+        if (!smsSent && voiceSent) errorMessage = "SMS failed, but voice call was initiated.";
+        if (smsSent && !voiceSent) errorMessage = "SMS sent, but voice call failed.";
       } else if (type === "email") {
         sent = await sendEmail(identifier, otp);
       }
-    } catch (error) {
+    } catch (error: any) {
       errorMessage = error.message || "Failed to send OTP";
       console.error("Send OTP error:", error);
     }
@@ -180,11 +210,11 @@ Deno.serve(async (req) => {
         .delete()
         .eq("identifier", identifier)
         .eq("otp_code", otp);
-        
+
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: errorMessage || "Failed to send OTP. Please try again.",
-          details: type === "phone" 
+          details: type === "phone"
             ? "SMS service may not be configured. Please contact administrator or try email verification."
             : "Email service may not be configured. Please contact administrator."
         }),
@@ -193,14 +223,14 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         message: `OTP sent to ${type === "phone" ? "mobile" : "email"}`,
         expiresIn: 600 // seconds
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error:", error);
     return new Response(
       JSON.stringify({ error: error.message || "Internal server error" }),

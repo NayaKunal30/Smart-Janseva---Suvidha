@@ -95,25 +95,57 @@ export default function Register() {
   const [phone, setPhone]             = useState('');
   const [email, setEmail]             = useState('');
   const [password, setPassword]       = useState('');
+  const [otp, setOtp]                 = useState('');
+  const [otpSent, setOtpSent]         = useState(false);
   const [fullName, setFullName]       = useState('');
   const [adminCode, setAdminCode]     = useState('');
   const [isAdmin, setIsAdmin]         = useState(false);
   const [loading, setLoading]         = useState(false);
   const [error, setError]             = useState('');
-  const [tab, setTab]                 = useState<'email' | 'phone'>('email');
-  const { signUpWithPhone, signUpWithEmail } = useAuth();
+  const [tab, setTab]                 = useState<'email' | 'phone'>('phone');
+  const { signUpWithEmail, sendOTP, verifyOTP } = useAuth();
   const navigate  = useNavigate();
   useAuthI18n();
   const container = useRef<HTMLDivElement>(null);
 
   useVirtualKeyboard(container as React.RefObject<HTMLElement>);
 
+  const handleSendOTP = async () => {
+    if (!phone || !fullName) {
+      setError('Please enter Full Name and Phone Number first');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      const result = await sendOTP(phone, 'phone');
+      if (result.error) {
+        setError(result.error.message);
+        toast.error('Failed to send OTP: ' + result.error.message);
+      } else {
+        setOtpSent(true);
+        toast.success('OTP sent to your phone!');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to send OTP');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (password.length < 6)              { setError('Password must be at least 6 characters'); return; }
-    if (isAdmin && adminCode !== ADMIN_CODE) { setError('Invalid admin registration code'); return; }
+    if (tab === 'email' && password.length < 6) { 
+      setError('Password must be at least 6 characters'); 
+      return; 
+    }
+    
+    if (isAdmin && adminCode !== ADMIN_CODE) { 
+      setError('Invalid admin registration code'); 
+      return; 
+    }
 
     setLoading(true);
     try {
@@ -154,7 +186,21 @@ export default function Register() {
           setLoading(false);
           return;
         }
-        result = await signUpWithPhone(phone, password, fullName, role);
+        
+        if (!otpSent) {
+          await handleSendOTP();
+          setLoading(false);
+          return;
+        }
+
+        if (!otp) {
+          setError('Please enter the OTP sent to your phone');
+          setLoading(false);
+          return;
+        }
+
+        // Use verifyOTP with mode='register'
+        result = await verifyOTP(phone, otp, fullName, 'register');
       }
 
       if (!result) return;
@@ -167,8 +213,8 @@ export default function Register() {
           toast.error('Registration failed: ' + result.error.message);
         }
       } else {
-        toast.success(`Registered as ${isAdmin ? 'Admin' : 'Citizen'}! Please login.`);
-        navigate('/login');
+        toast.success(`Registered as ${isAdmin ? 'Admin' : 'Citizen'}! Welcome ${fullName}.`);
+        navigate('/dashboard'); // Direct login after OTP registration
       }
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred');
@@ -236,19 +282,32 @@ export default function Register() {
               <label htmlFor="reg-phone-opt" style={lS} className="sj-form-label">Phone (Optional)</label>
               <input id="reg-phone-opt" type="tel" placeholder="+91 1234567890" value={phone} onChange={e => setPhone(e.target.value)} style={iS} className="sj-input-teal sj-form-input" />
             </div>
+            <div style={fw}>
+              <label htmlFor="reg-password" style={lS} className="sj-form-label">Password</label>
+              <input id="reg-password" type="password" placeholder="Min 6 chars" value={password} onChange={e => setPassword(e.target.value)} required aria-required="true" minLength={6} style={iS} className="sj-input-teal sj-form-input" />
+            </div>
           </>
         ) : (
-          <div style={fw}>
-            <label htmlFor="reg-phone" style={lS} className="sj-form-label">Phone Number</label>
-            <input id="reg-phone" type="tel" placeholder="+91 1234567890" value={phone} onChange={e => setPhone(e.target.value)} required aria-required="true" style={iS} className="sj-input-teal sj-form-input" />
-          </div>
+          <>
+            <div style={fw}>
+              <label htmlFor="reg-phone" style={lS} className="sj-form-label">Phone Number</label>
+              <input id="reg-phone" type="tel" placeholder="+91 1234567890" value={phone} onChange={e => setPhone(e.target.value)} disabled={otpSent} required aria-required="true" style={iS} className="sj-input-teal sj-form-input" />
+            </div>
+            {otpSent && (
+              <div style={fw}>
+                <label htmlFor="reg-otp" style={lS} className="sj-form-label">Enter OTP</label>
+                <input id="reg-otp" type="text" placeholder="6-digit OTP" value={otp} onChange={e => setOtp(e.target.value)} required aria-required="true" style={iS} className="sj-input-teal sj-form-input" />
+              </div>
+            )}
+            {!otpSent && (
+              <div style={{ display:'flex', alignItems:'flex-end' }}>
+                <button type="button" onClick={handleSendOTP} disabled={loading} style={{ ...btnS, marginTop: 0 }}>
+                  {loading ? 'Sending...' : 'Send OTP'}
+                </button>
+              </div>
+            )}
+          </>
         )}
-
-        {/* Password + Confirm */}
-        <div style={fw}>
-          <label htmlFor="reg-password" style={lS} className="sj-form-label">Password</label>
-          <input id="reg-password" type="password" placeholder="Min 6 chars" value={password} onChange={e => setPassword(e.target.value)} required aria-required="true" minLength={6} style={iS} className="sj-input-teal sj-form-input" />
-        </div>
       </div>
 
       {/* Admin toggle */}
@@ -269,7 +328,7 @@ export default function Register() {
 
       {/* Submit */}
       <button type="submit" disabled={loading} style={{ ...btnS, opacity: loading ? 0.72 : 1 }} className="sj-form-submit">
-        {loading ? 'Creating Account…' : 'Register'}
+        {loading ? 'Processing…' : (tab === 'phone' ? (otpSent ? 'Verify & Register' : 'Register') : 'Register')}
       </button>
 
       {/* Login link */}
