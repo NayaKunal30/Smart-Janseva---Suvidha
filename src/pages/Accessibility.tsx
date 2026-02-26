@@ -6,10 +6,8 @@ export default function Accessibility() {
       <div className="h-full overflow-y-auto pr-4 scrollbar-hide animate-in fade-in slide-in-from-bottom-6 duration-700">
         <div className="bg-white rounded-[32px] border p-10 mb-8" style={{ borderColor: 'rgba(14,13,11,.09)' }}>
           <div className="flex items-center gap-4 mb-8">
-            <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/><path d="M15 7l-3-3-3 3"/>
-              </svg>
+            <div className="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600 text-2xl">
+              ♿
             </div>
             <div>
               <h2 className="text-[1.4rem] font-bold text-[#0e0d0b]">Our Commitment</h2>

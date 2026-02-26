@@ -36,7 +36,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { identifier, otp, fullName, mode = 'login' }: VerifyOTPRequest = await req.json();
+    let { identifier, otp, fullName, mode = 'login' }: VerifyOTPRequest = await req.json();
 
     if (!identifier || !otp) {
       return new Response(
@@ -44,6 +44,19 @@ Deno.serve(async (req: Request) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Normalize identifier for database consistency
+    const originalIdentifier = identifier;
+    // Assuming type logic - if it looks like phone (all digits or starts with +)
+    // Actually, we should check otp_verifications for either format, 
+    // but better to normalize here too.
+    if (!identifier.includes("@")) {
+      identifier = identifier.replace(/\D/g, "");
+    } else {
+      identifier = identifier.toLowerCase().trim();
+    }
+    
+    console.log(`[VerifyOTP] Normalized: ${originalIdentifier} -> ${identifier}`);
 
     // Get the latest OTP for this identifier
     const { data: otpRecord, error: fetchError } = await supabase
@@ -102,87 +115,69 @@ Deno.serve(async (req: Request) => {
       .update({ verified: true })
       .eq("id", otpRecord.id);
 
-    // Generate the deterministic password using normalized phone (digits only)
+    // Generate deterministic credentials
     const cleanPhone = identifier.replace(/\D/g, '');
     const secretPassword = await generateDeterministicPassword(cleanPhone);
     const ghostEmail = `${cleanPhone}@phone.local`;
     
-    console.log(`[VerifyOTP] Normalized: ${cleanPhone}, GhostEmail: ${ghostEmail}`);
+    console.log(`[VerifyOTP] Normalizing for: ${identifier} -> ${ghostEmail}`);
     
-    let userExists = false;
-
-    // Security check/User handling
-    if (otpRecord.otp_type === 'phone') {
-      try {
-        // Search for user by phone OR our special ghost email
-        console.log('[VerifyOTP] Searching for user...');
-        const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
-        if (listError) throw listError;
-
-        let user = users.find((u: any) =>
-          u.phone?.replace(/\D/g, '') === cleanPhone ||
-          u.email === ghostEmail
-        );
-
-        if (user) {
-          console.log(`[VerifyOTP] Found existing user: ${user.id}`);
-          userExists = true;
-          
-          // Force password update to our deterministic secret
-          const { error: updateError } = await supabase.auth.admin.updateUserById(user.id, { 
-            password: secretPassword,
-            // If they were a phone-only user, we convert them to an email-based 'ghost' account 
-            // so login doesn't fail even if phone logins are disabled.
-            email: user.email || ghostEmail,
-            email_confirm: true
-          });
-          if (updateError) console.error('[VerifyOTP] Failed to sync account:', updateError.message);
-        } else if (mode === 'register') {
-          console.log('[VerifyOTP] Creating new ghost account...');
-          // Create the account using the ghost email to bypass Supabase Phone provider requirements
-          const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
-            email: ghostEmail,
-            password: secretPassword,
-            email_confirm: true,
-            user_metadata: {
-              full_name: fullName || 'User',
-              role: 'citizen',
-              phone_number: identifier
-            }
-          });
-
-          if (createError) {
-            console.error("[VerifyOTP] Registration failed:", createError.message);
-            throw createError;
-          }
-          userExists = true;
-        } else {
-          console.warn("[VerifyOTP] User not found during login");
-          return new Response(
-            JSON.stringify({ error: "User not found. Please register first." }),
-            { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-      } catch (err: any) {
-        console.error("[VerifyOTP] Critical error:", err.message);
-        return new Response(
-          JSON.stringify({ error: "Auth system error: " + err.message }),
-          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+    // Check if user exists - listing users is the only reliable way to find by ghost email via admin API
+    const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
+    
+    if (listError) {
+      console.error("[VerifyOTP] Admin listUsers failed:", listError.message);
+      throw listError;
     }
 
-    console.log(`[VerifyOTP] Success. Logging in with: ${ghostEmail}`);
+    let targetUser = users.find((u: any) => 
+      u.email === ghostEmail || 
+      (u.phone && u.phone.replace(/\D/g, '') === cleanPhone)
+    );
+
+    if (!targetUser) {
+      if (mode === 'register') {
+        console.log(`[VerifyOTP] Creating new ghost account for ${fullName || 'User'}`);
+        const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
+          email: ghostEmail,
+          password: secretPassword,
+          email_confirm: true,
+          user_metadata: {
+            full_name: fullName || 'User',
+            role: 'citizen',
+            phone_number: identifier
+          }
+        });
+
+        if (createError) {
+          console.error("[VerifyOTP] Account creation error:", createError.message);
+          throw createError;
+        }
+        targetUser = newUser.user;
+      } else {
+        return new Response(
+          JSON.stringify({ error: "User not registered. Please sign up first." }),
+          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    } else {
+      console.log(`[VerifyOTP] Account exists (${targetUser.id}). Synchronizing session secret...`);
+      // Update password to deterministic secret to allow immediate login
+      const { error: updateError } = await supabase.auth.admin.updateUserById(targetUser.id, { 
+        password: secretPassword,
+        email_confirm: true
+      });
+      if (updateError) console.error('[VerifyOTP] Failed to sync session secret:', updateError.message);
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
-        message: "OTP verified successfully",
-        identifier: identifier,
-        type: otpRecord.otp_type,
+        message: "OTP verified",
         canLogin: true,
         secretPassword: secretPassword,
-        userExists: true,
-        loginIdentifier: ghostEmail // ALWAYS use the ghost email for the actual sign-in
+        loginIdentifier: ghostEmail,
+        type: otpRecord.otp_type
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

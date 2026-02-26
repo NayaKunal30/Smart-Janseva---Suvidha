@@ -133,7 +133,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { identifier, type }: OTPRequest = await req.json();
+    let { identifier, type }: OTPRequest = await req.json();
 
     if (!identifier || !type) {
       return new Response(
@@ -141,6 +141,16 @@ Deno.serve(async (req: Request) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Normalize identifier for database consistency
+    const originalIdentifier = identifier;
+    if (type === "phone") {
+      identifier = identifier.replace(/\D/g, "");
+    } else {
+      identifier = identifier.toLowerCase().trim();
+    }
+    
+    console.log(`[SendOTP] Normalized: ${originalIdentifier} -> ${identifier}`);
 
     // Generate OTP
     const otp = generateOTP();

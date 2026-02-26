@@ -747,9 +747,6 @@ export default function KioskLayout({
       />
 
       <a href="#main-content" className="skip-link" title="Skip to content">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '10px' }}>
-          <circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/><path d="M15 7l-3-3-3 3"/>
-        </svg>
         Skip to main content
       </a>
       <div className="relative z-[2] grid h-screen w-screen grid-rows-[80px_1fr_72px] overflow-hidden">
@@ -764,11 +761,6 @@ export default function KioskLayout({
           }}
         >
           <div className="flex items-center gap-5">
-            <a href="#main-content" title="Skip to main content (WCAG 2.4.1)" className="flex items-center justify-center w-9 h-9 rounded-full bg-white/50 text-[#7a7368] hover:bg-[#0e5e65] hover:text-white transition-all shadow-sm border border-black/5">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M9 10h6"/><path d="M12 10v4"/><path d="M12 14v4M12 14l-3 4M12 14l3 4M9 10l-1-2M15 10l1-2"/>
-              </svg>
-            </a>
             <Link to={user ? '/dashboard' : '/'} className="flex items-center gap-[14px]" aria-label="Smart Janseva Home" title="National Emblem of India">
               <Emblem />
               <div>
@@ -830,9 +822,11 @@ export default function KioskLayout({
               title="Screen Reader"
               aria-label="Toggle Screen Reader focus-to-speech"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={screenReader ? '#1b8f99' : '#7a7368'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M2 10s3-3 3-8" /><path d="M22 10s-3-3-3-8" /><path d="M14 15a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" /><path d="M2 22v-3a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3" /><path d="M12 15V7" />
-              </svg>
+              <img 
+                src="/screen.png" 
+                alt="Screen Reader" 
+                style={{ width: '20px', height: '20px', objectFit: 'contain' }} 
+              />
             </button>
 
             <div className="h-8 w-px" style={{ background: 'rgba(14,13,11,.09)' }} />
@@ -983,26 +977,35 @@ export default function KioskLayout({
                   {title}
                 </div>
               ) : (
-                <h1
-                  className="text-[2.6rem] font-extrabold leading-[1.05]"
-                  style={{ fontFamily: "'Fraunces',serif", letterSpacing: '-.03em', color: '#0e0d0b' }}
-                >
-                  Citizen
-                  <br />
-                  <span
-                    style={{
-                      background:
-                        'linear-gradient(135deg,#cc5500 0%,#c8991e 50%,#1b8f99 100%)',
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      backgroundClip: 'text',
+                <div className="flex flex-col">
+                  <h1
+                    className="text-[2.6rem] font-extrabold leading-[1.05]"
+                    style={{ 
+                      fontFamily: "'Fraunces',serif", 
+                      letterSpacing: '-.03em', 
+                      color: '#0e0d0b',
                     }}
                   >
-                    Services
-                  </span>
-                  <br />
-                  At One Touch
-                </h1>
+                    <span className="animate-typing-1 block overflow-hidden whitespace-nowrap border-r-4 border-transparent">
+                      Citizen
+                    </span>
+                    <span
+                      className="animate-typing-2 block overflow-hidden whitespace-nowrap border-r-4 border-transparent"
+                      style={{
+                        background:
+                          'linear-gradient(135deg,#cc5500 0%,#c8991e 50%,#1b8f99 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                      }}
+                    >
+                      Services
+                    </span>
+                    <span className="animate-typing-3 block overflow-hidden whitespace-nowrap border-r-4 border-transparent">
+                      At One Touch
+                    </span>
+                  </h1>
+                </div>
               )}
 
               <p
@@ -1107,7 +1110,7 @@ export default function KioskLayout({
             )}
           </aside>
 
-          <section className="flex min-h-0 flex-col overflow-hidden px-7 py-6">
+          <section className="flex min-h-0 flex-col overflow-hidden px-7 py-4">
             <div
               className="flex items-center gap-3 text-[0.63rem] font-extrabold uppercase"
               style={{ color: '#7a7368', letterSpacing: '.2em' }}
@@ -1329,6 +1332,36 @@ export default function KioskLayout({
           enter: t('enter'),
         }}
       />
+      <style>{`
+        html, body {
+          overflow: hidden !important;
+          height: 100vh !important;
+          width: 100vw !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          touch-action: manipulation;
+        }
+        @keyframes sj-typing {
+          from { width: 0 }
+          to { width: 100% }
+        }
+        @keyframes sj-blink {
+          from, to { border-color: transparent }
+          50% { border-color: #cc5500; }
+        }
+        .animate-typing-1 {
+          width: 0;
+          animation: sj-typing 1s steps(15) forwards, sj-blink .7s step-end 2;
+        }
+        .animate-typing-2 {
+          width: 0;
+          animation: sj-typing 1.2s steps(15) 1s forwards, sj-blink .7s step-end 1s 2;
+        }
+        .animate-typing-3 {
+          width: 0;
+          animation: sj-typing 1.5s steps(20) 2.2s forwards, sj-blink .7s step-end 2.2s infinite;
+        }
+      `}</style>
     </KioskI18nContext.Provider>
   );
 }

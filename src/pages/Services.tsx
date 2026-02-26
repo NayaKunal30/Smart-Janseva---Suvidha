@@ -19,10 +19,11 @@ export default function Services() {
       setServices(data.length > 0 ? data : [
         { id: '1', name: 'Water Connection', description: 'Apply for new water connection or change existing one', icon: '🚰' },
         { id: '2', name: 'Electricity Connection', description: 'New power line or meter replacement services', icon: '⚡' },
-        { id: '3', name: 'Ration Card', description: 'Apply for new or renew your food security card', icon: '🌾' },
-        { id: '4', name: 'Property Tax', description: 'Self-assessment and property documentation', icon: '🏠' },
-        { id: '5', name: 'Birth Certificate', description: 'Registration and issuance of birth records', icon: '👶' },
-        { id: '6', name: 'Death Certificate', description: 'Official registration of death records', icon: '🕊️' },
+        { id: '3', name: 'Gas Connection', description: 'New PNG/LPG connection for residential and commercial', icon: '🔥' },
+        { id: '4', name: 'Ration Card', description: 'Apply for new or renew your food security card', icon: '🌾' },
+        { id: '5', name: 'Property Tax', description: 'Self-assessment and property documentation', icon: '🏠' },
+        { id: '6', name: 'Birth Certificate', description: 'Registration and issuance of birth records', icon: '👶' },
+        { id: '7', name: 'Death Certificate', description: 'Official registration of death records', icon: '🕊️' },
       ]);
     } catch (error) {
       console.error('Error loading services:', error);
@@ -61,6 +62,8 @@ export default function Services() {
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                     ) : service.name.toLowerCase().includes('electric') ? (
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    ) : service.name.toLowerCase().includes('gas') ? (
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2c0 4.5-6 9-6 13a6 6 0 0 0 12 0c0-4-6-8.5-6-13z"/><path d="M12 13c-1 1-1.5 2-1.5 3s.5 2 1.5 2 1.5-1 1.5-2-.5-2-1.5-3z"/></svg>
                     ) : service.name.toLowerCase().includes('ration') ? (
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>
                     ) : service.name.toLowerCase().includes('tax') ? (

@@ -63,18 +63,10 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-sidebar text-sidebar-foreground" role="banner">
       <a href="#main-content" className="skip-link" title="Skip to content">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-          <circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/><path d="M15 7l-3-3-3 3"/>
-        </svg>
         Skip to main content
       </a>
       <div className="container flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-4">
-          <a href="#main-content" className="flex items-center justify-center w-7 h-7 rounded-full bg-sidebar-accent/50 text-sidebar-foreground hover:bg-primary hover:text-primary-foreground transition-all" title="Skip to main content (WCAG 2.4.1)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M9 10h6"/><path d="M12 10v4"/><path d="M12 14v4M12 14l-3 4M12 14l3 4M9 10l-1-2M15 10l1-2"/>
-            </svg>
-          </a>
           <Sheet>
             <SheetTrigger asChild className="lg:hidden">
               <Button variant="ghost" size="icon" aria-label="Open Navigation Menu">
@@ -143,9 +135,11 @@ export function Header() {
             className={screenReader ? 'text-primary' : ''}
             aria-label="Toggle Screen Reader"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M2 10s3-3 3-8" /><path d="M22 10s-3-3-3-8" /><path d="M14 15a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" /><path d="M2 22v-3a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3" /><path d="M12 15V7" />
-            </svg>
+            <img 
+              src="/screen.png" 
+              alt="Screen Reader" 
+              style={{ width: '20px', height: '20px', objectFit: 'contain' }} 
+            />
           </Button>
 
           <SessionTimer />

@@ -272,31 +272,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         
         let signInResult;
-        const loginId = data.loginIdentifier || identifier;
+        const loginId = data.loginIdentifier; // The ghost email from edge function
         
-        // Determine if we should sign in with phone or email based on the returned identifier
-        if (loginId.includes('@')) {
-          console.log('Signing in with email credential:', loginId);
-          signInResult = await supabase.auth.signInWithPassword({
-            email: loginId,
-            password: data.secretPassword,
-          });
-        } else {
-          // Ensure phone has + prefix for Supabase consistency
-          const e164Phone = loginId.startsWith('+') ? loginId : `+${loginId}`;
-          console.log('Signing in with phone credential:', e164Phone);
-          signInResult = await supabase.auth.signInWithPassword({
-            phone: e164Phone,
-            password: data.secretPassword,
-          });
-        }
+        console.log('OTP verified. Signing in with secure ghost credential:', loginId);
+        
+        signInResult = await supabase.auth.signInWithPassword({
+          email: loginId,
+          password: data.secretPassword,
+        });
 
         if (signInResult.error) {
-          console.error('Login with secret password failed:', signInResult.error);
+          console.error('Secure ghost login failed:', signInResult.error);
           throw signInResult.error;
         }
         
-        console.log('Login successful with secure deterministic password');
+        console.log('Ghost login successful. Session established.');
       }
 
       return { error: null };

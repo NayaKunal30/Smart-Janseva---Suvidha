@@ -254,12 +254,12 @@ export default function Register() {
 
       {/* Info banner */}
       {tab === 'email' ? (
-        <div style={{ background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'5px', padding:'3px 8px', fontSize:'0.63rem', color:'#166534', fontWeight:600 }}>
-          ✅ Recommended: Email registration
+        <div style={{ background:'#f5f1ea', border:'1px solid rgba(14,13,11,.1)', borderRadius:'5px', padding:'4px 8px', fontSize:'0.63rem', color:'#7a7368', fontWeight:600 }}>
+          ✉️ Register with email and password
         </div>
       ) : (
-        <div style={{ background:'#fff7ed', border:'1px solid #fed7aa', borderRadius:'5px', padding:'3px 8px', fontSize:'0.63rem', color:'#9a3412', fontWeight:600 }}>
-          ⚠️ Phone registration requires SMS service
+        <div style={{ background:'#f0fdf4', border:'1px solid #bbf7d0', borderRadius:'5px', padding:'3px 8px', fontSize:'0.63rem', color:'#166534', fontWeight:600 }}>
+          ✅ Recommended: OTP-based secure registration
         </div>
       )}
 
@@ -345,27 +345,37 @@ export default function Register() {
     <AuthLayout title={<>New Registration</>}>
       <div
         ref={container}
-        style={{ display:'grid', gridTemplateColumns:'1fr 1.5fr', gap:'24px', width:'100%', maxWidth:'1280px', margin:'0 auto', height:'100%', alignItems:'stretch' }}
+        style={{ 
+          display:'grid', 
+          gridTemplateColumns:'1fr 1.5fr', 
+          gap:'20px', 
+          width:'100%', 
+          maxWidth:'1100px', 
+          margin:'0 auto', 
+          height:'100%', 
+          maxHeight: 'calc(100vh - 160px)',
+          alignItems:'stretch' 
+        }}
         className="sj-auth-grid"
       >
         {/* ── Branding ── */}
-        <div style={{ ...cardStyle, padding:'30px', display:'flex', flexDirection:'column', justifyContent:'center' }} className="sj-auth-brand-card">
-          <div style={{ textAlign:'center', marginBottom:'24px' }}>
-            <img src="/logo.png" alt="National Emblem of India" style={{ height: '64px', margin: '0 auto', marginBottom: '8px' }} />
-            <div style={{ fontSize:'1.6rem', fontWeight:800, color:'#0e0d0b', marginBottom:'2px' }} className="sj-brand-title">SMART JANSEVA</div>
-            <div style={{ fontSize:'0.9rem', fontWeight:600, color:'#7a7368' }} className="sj-brand-sub">Government of India Digital Services</div>
+        <div style={{ ...cardStyle, padding:'24px', display:'flex', flexDirection:'column', justifyContent:'center' }} className="sj-auth-brand-card">
+          <div style={{ textAlign:'center', marginBottom:'16px' }}>
+            <img src="/logo.png" alt="National Emblem of India" style={{ height: '56px', margin: '0 auto', marginBottom: '6px' }} />
+            <div style={{ fontSize:'1.4rem', fontWeight:800, color:'#0e0d0b', marginBottom:'2px' }} className="sj-brand-title">SMART JANSEVA</div>
+            <div style={{ fontSize:'0.85rem', fontWeight:600, color:'#7a7368' }} className="sj-brand-sub">Government of India Digital Services</div>
           </div>
-          <div style={{ display:'flex', flexDirection:'column', gap:'16px' }}>
+          <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
             {[
               { icon:'🪪', title:'Secure Registration', desc:'Create account safely',         bg:'rgba(14,94,101,.1)' },
               { icon:'👤', title:'Citizen & Admin',     desc:'Register as citizen or officer', bg:'rgba(204,85,0,.1)' },
               { icon:'🏛️', title:'Access Services',     desc:'All services in one place',      bg:'rgba(168,120,32,.1)' },
             ].map(f => (
-              <div key={f.title} style={{ display:'flex', alignItems:'center', gap:'14px' }}>
-                <div style={{ height:'42px', width:'42px', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', borderRadius:'10px', background:f.bg, fontSize:'1.2rem' }}>{f.icon}</div>
+              <div key={f.title} style={{ display:'flex', alignItems:'center', gap:'12px' }}>
+                <div style={{ height:'38px', width:'38px', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', borderRadius:'10px', background:f.bg, fontSize:'1.1rem' }}>{f.icon}</div>
                 <div>
-                  <div style={{ fontWeight:800, fontSize:'0.95rem', color:'#0e0d0b' }} className="sj-feat-title">{f.title}</div>
-                  <div style={{ fontSize:'0.8rem', color:'#7a7368' }} className="sj-feat-desc">{f.desc}</div>
+                  <div style={{ fontWeight:800, fontSize:'0.88rem', color:'#0e0d0b' }} className="sj-feat-title">{f.title}</div>
+                  <div style={{ fontSize:'0.74rem', color:'#7a7368' }} className="sj-feat-desc">{f.desc}</div>
                 </div>
               </div>
             ))}
@@ -373,12 +383,12 @@ export default function Register() {
         </div>
 
         {/* ── Form ── */}
-        <div style={{ ...cardStyle, padding:'24px 30px', display:'flex', flexDirection:'column' }} className="sj-auth-form-card">
+        <div style={{ ...cardStyle, padding:'20px 24px', display:'flex', flexDirection:'column' }} className="sj-auth-form-card">
           {/* Tab switcher */}
-          <div style={{ display:'flex', marginBottom:'20px', borderRadius:'10px', overflow:'hidden', border:'1.5px solid rgba(14,13,11,.09)', flexShrink:0 }}>
-            {(['email','phone'] as const).map(v => (
+          <div style={{ display:'flex', marginBottom:'16px', borderRadius:'10px', overflow:'hidden', border:'1.5px solid rgba(14,13,11,.09)', flexShrink:0 }}>
+            {(['phone','email'] as const).map(v => (
               <button key={v} type="button" onClick={() => { setTab(v); setError(''); }} style={{
-                flex:1, padding:'10px 0', fontSize:'0.9rem', fontWeight:800, border:'none', cursor:'pointer',
+                flex:1, padding:'8px 0', fontSize:'0.85rem', fontWeight:800, border:'none', cursor:'pointer',
                 background: tab===v ? '#0e0d0b' : '#f5f1ea',
                 color: tab===v ? 'white' : '#7a7368',
                 transition:'all 0.15s',
@@ -389,16 +399,21 @@ export default function Register() {
           </div>
 
           {/* Form body — scrollable independently */}
-          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', overflowY: 'auto', paddingRight: '10px' }} className="scrollbar-hide">
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', overflowY: 'auto', paddingRight: '6px' }} className="scrollbar-hide">
             {FormBody}
           </div>
         </div>
       </div>
 
       <style>{`
-        @media (max-width:600px) {
-          .sj-auth-grid { grid-template-columns:1fr !important; max-height:unset !important; }
+        @media (max-width:850px) {
+          .sj-auth-grid { grid-template-columns:1fr !important; max-width: 480px !important; max-height:none !important; }
           .sj-auth-brand-card { display:none !important; }
+        }
+        @media (max-height: 700px) {
+           .sj-brand-sub, .sj-feat-desc { display: none !important; }
+           .sj-auth-brand-card { padding: 15px !important; }
+           .sj-auth-form-card { padding: 15px !important; }
         }
         /* Senior mode overrides for register */
         .sj-senior-mode .sj-auth-form-card .sj-form-input  { height:37px !important; font-size:0.88rem !important; }

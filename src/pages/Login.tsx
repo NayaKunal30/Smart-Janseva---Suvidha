@@ -95,7 +95,7 @@ export default function Login() {
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
+  const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('phone');
   const [loginAttempts, setLoginAttempts] = useState(0);
   const [lastAttemptTime, setLastAttemptTime] = useState(0);
   const { signInWithEmail, sendOTP, verifyOTP } = useAuth();
@@ -246,8 +246,8 @@ export default function Login() {
           {error}
         </div>
       )}
-      <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', color: '#166534', fontWeight: 600 }}>
-        ✅ Recommended: Email login
+      <div style={{ background: '#f5f1ea', border: '1px solid rgba(14,13,11,.1)', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', color: '#7a7368', fontWeight: 600 }}>
+        ✉️ Login with email and password
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', alignItems: 'end' }}>
         <div style={fieldStyle}>
@@ -278,8 +278,8 @@ export default function Login() {
           {error}
         </div>
       )}
-      <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', color: '#9a3412', fontWeight: 600 }}>
-        📱 OTP-based secure login
+      <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '6px', padding: '5px 10px', fontSize: '0.75rem', color: '#166534', fontWeight: 600 }}>
+        ✅ Recommended: OTP-based secure login
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', alignItems: 'end' }}>
         <div style={fieldStyle}>
@@ -351,11 +351,12 @@ export default function Login() {
         style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1.3fr',
-          gap: '24px',
+          gap: '20px',
           width: '100%',
-          maxWidth: '1200px',
+          maxWidth: '1000px',
           margin: '0 auto',
           height: '100%',
+          maxHeight: 'calc(100vh - 180px)', // Account for header/footer
           alignItems: 'stretch',
         }}
         className="sj-auth-grid"
@@ -366,26 +367,26 @@ export default function Login() {
           style={{
             position: 'relative', overflow: 'hidden', borderRadius: '18px',
             border: '1px solid rgba(14,13,11,.09)', background: 'white',
-            boxShadow: '0 2px 8px rgba(14,13,11,.05)', padding: '30px',
+            boxShadow: '0 2px 8px rgba(14,13,11,.05)', padding: '24px',
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
           }}
         >
-          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-            <img src="/logo.png" alt="Smart Janseva" style={{ height: '64px', margin: '0 auto', marginBottom: '8px' }} />
-            <div className="brand-title" style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0e0d0b', marginBottom: '2px' }}>SMART JANSEVA</div>
-            <div className="brand-subtitle" style={{ fontSize: '0.9rem', fontWeight: 600, color: '#7a7368' }}>Government of India Digital Services</div>
+          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <img src="/logo.png" alt="Smart Janseva" style={{ height: '56px', margin: '0 auto', marginBottom: '6px' }} />
+            <div className="brand-title" style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0e0d0b', marginBottom: '2px' }}>SMART JANSEVA</div>
+            <div className="brand-subtitle" style={{ fontSize: '0.8rem', fontWeight: 600, color: '#7a7368' }}>Government of India Digital Services</div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {[
               { icon: '🔒', title: 'Secure Authentication', desc: 'Encrypted & protected', bg: 'rgba(204,85,0,.1)' },
-              { icon: '📱', title: 'Multiple Options', desc: 'Email & Phone login', bg: 'rgba(14,94,101,.1)' },
+              { icon: '📱', title: 'Multiple Options', desc: 'Phone & Email login', bg: 'rgba(14,94,101,.1)' },
               { icon: '⚡', title: 'Quick Access', desc: 'Instant login', bg: 'rgba(168,120,32,.1)' },
             ].map(f => (
-              <div key={f.title} style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <div style={{ height: '42px', width: '42px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', background: f.bg, fontSize: '1.2rem' }}>{f.icon}</div>
+              <div key={f.title} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ height: '38px', width: '38px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', background: f.bg, fontSize: '1.1rem' }}>{f.icon}</div>
                 <div>
-                  <div className="feature-title" style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0e0d0b' }}>{f.title}</div>
-                  <div className="feature-desc" style={{ fontSize: '0.8rem', color: '#7a7368' }}>{f.desc}</div>
+                  <div className="feature-title" style={{ fontWeight: 800, fontSize: '0.88rem', color: '#0e0d0b' }}>{f.title}</div>
+                  <div className="feature-desc" style={{ fontSize: '0.74rem', color: '#7a7368' }}>{f.desc}</div>
                 </div>
               </div>
             ))}
@@ -398,19 +399,19 @@ export default function Login() {
           style={{
             position: 'relative', overflow: 'hidden', borderRadius: '18px',
             border: '1px solid rgba(14,13,11,.09)', background: 'white',
-            boxShadow: '0 2px 8px rgba(14,13,11,.05)', padding: '24px 30px',
+            boxShadow: '0 2px 8px rgba(14,13,11,.05)', padding: '20px 24px',
             display: 'flex', flexDirection: 'column',
           }}
         >
           {/* Tab header */}
-          <div style={{ display: 'flex', gap: 0, marginBottom: '20px', borderRadius: '10px', overflow: 'hidden', border: '1.5px solid rgba(14,13,11,.09)', flexShrink: 0 }}>
-            {['email', 'phone'].map((tab) => (
+          <div style={{ display: 'flex', gap: 0, marginBottom: '16px', borderRadius: '10px', overflow: 'hidden', border: '1.5px solid rgba(14,13,11,.09)', flexShrink: 0 }}>
+            {['phone', 'email'].map((tab) => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => setAuthMethod(tab as 'email' | 'phone')}
                 style={{
-                  flex: 1, padding: '10px 0', fontSize: '0.9rem', fontWeight: 800, border: 'none', cursor: 'pointer',
+                  flex: 1, padding: '8px 0', fontSize: '0.85rem', fontWeight: 800, border: 'none', cursor: 'pointer',
                   background: authMethod === tab ? '#0e0d0b' : '#f5f1ea',
                   color: authMethod === tab ? 'white' : '#7a7368',
                   transition: 'all 0.15s',
@@ -423,7 +424,7 @@ export default function Login() {
           </div>
 
           {/* Form body — scrollable independently */}
-          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', overflowY: 'auto', paddingRight: '10px' }} className="scrollbar-hide">
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', overflowY: 'auto', paddingRight: '6px' }} className="scrollbar-hide">
             {authMethod === 'email' ? EmailForm : PhoneForm}
           </div>
         </div>
@@ -431,14 +432,20 @@ export default function Login() {
 
       {/* Responsive: stack on small screens */}
       <style>{`
-        @media (max-width: 640px) {
+        @media (max-width: 800px) {
           .sj-auth-grid {
             grid-template-columns: 1fr !important;
-            maxHeight: unset !important;
+            max-width: 480px !important;
+            max-height: none !important;
           }
           .sj-auth-brand-card {
             display: none !important;
           }
+        }
+        @media (max-height: 700px) {
+           .brand-subtitle, .feature-desc { display: none !important; }
+           .sj-auth-brand-card { padding: 15px !important; }
+           .sj-auth-form-card { padding: 15px !important; }
         }
         .sj-input:focus {
           border-color: #cc5500 !important;

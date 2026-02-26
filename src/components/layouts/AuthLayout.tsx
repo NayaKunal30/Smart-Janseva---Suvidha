@@ -413,6 +413,14 @@ export default function AuthLayout({ children, title }: { children: ReactNode; t
         @keyframes sj-emblem-spin { to { transform: rotate(360deg); } }
         @keyframes sj-toast-in { from { opacity:0; transform:translateX(-50%) translateY(-6px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
         *, *::before, *::after { box-sizing: border-box; }
+        html, body { 
+          overflow: hidden !important; 
+          height: 100vh !important; 
+          width: 100vw !important; 
+          margin: 0 !important; 
+          padding: 0 !important; 
+          touch-action: manipulation;
+        }
         .sj-input:focus { outline:none; border-color:#cc5500 !important; box-shadow:0 0 0 2px rgba(204,85,0,.13) !important; }
         .sj-input-teal:focus { outline:none; border-color:#0e5e65 !important; box-shadow:0 0 0 2px rgba(14,94,101,.13) !important; }
 
@@ -433,20 +441,12 @@ export default function AuthLayout({ children, title }: { children: ReactNode; t
 
       {/* Root shell */}
       <a href="#main-content" className="skip-link" title="Skip to content">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
-          <circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/><path d="M15 7l-3-3-3 3"/>
-        </svg>
         Skip to main content
       </a>
       <div style={{ position:'fixed', inset:0, zIndex:2, display:'flex', flexDirection:'column', height:'100vh', width:'100vw', overflow:'hidden' }}>
 
         <header style={{ flexShrink:0, height:`${HEADER_H}px`, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 22px', background:'rgba(255,255,255,.88)', backdropFilter:'blur(32px)', WebkitBackdropFilter:'blur(32px)', borderBottom:'1px solid rgba(14,13,11,.09)', zIndex:10 }} role="banner">
           <div className="flex items-center gap-3">
-            <a href="#main-content" title="Skip to main content (WCAG 2.4.1)" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '50%', background: '#f5f1ea', color: '#7a7368', transition: 'all 0.2s' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"/><path d="M9 10h6"/><path d="M12 10v4"/><path d="M12 14v4M12 14l-3 4M12 14l3 4M9 10l-1-2M15 10l1-2"/>
-              </svg>
-            </a>
             <Link to="/" style={{ display:'flex', alignItems:'center', gap:'10px', textDecoration:'none' }} aria-label="Smart Janseva Home">
               <Emblem />
               <div>
@@ -514,25 +514,25 @@ export default function AuthLayout({ children, title }: { children: ReactNode; t
         <main id="main-content" style={{
           flex:1, minHeight:0,
           display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-          padding:'10px 14px',
-          paddingBottom: keyboardOpen ? `${KBD_H + 10}px` : '10px',
+          padding:'5px 10px',
+          paddingBottom: keyboardOpen ? `${KBD_H + 5}px` : '5px',
           transition:'padding-bottom 0.22s ease',
           overflow:'hidden',
         }}>
           <div style={{ width:'100%', maxWidth:'1280px', height:'100%', display:'flex', flexDirection:'column', overflow:'hidden' }}>
             {title && (
-              <div style={{ flexShrink:0, display:'flex', justifyContent:'center', marginBottom:'16px' }}>
-                <div style={{ position:'relative', overflow:'hidden', borderRadius:'11px', border:'1px solid rgba(14,13,11,.09)', background:'white', boxShadow:'0 2px 10px rgba(14,13,11,.07)', padding:'8px 22px', textAlign:'center', maxWidth:'500px' }}>
-                  <div style={{ fontSize:'1.42rem', fontWeight:800, fontFamily:"'Fraunces',serif", letterSpacing:'-.03em', color:'#0e0d0b', lineHeight:1.1 }}>{title}</div>
-                  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:'5px', marginTop:'3px' }}>
-                    <div style={{ height:'4px', width:'4px', borderRadius:'50%', background:'#cc5500' }} />
-                    <p style={{ fontSize:'0.59rem', fontWeight:700, fontFamily:"'Noto Sans Devanagari',sans-serif", color:'#7a7368', letterSpacing:'.07em', margin:0 }}>24×7 · सरल · सुरक्षित · सुविधाजनक</p>
-                    <div style={{ height:'4px', width:'4px', borderRadius:'50%', background:'#1b8f99' }} />
+              <div style={{ flexShrink:0, display:'flex', justifyContent:'center', marginBottom:'8px' }} className="sj-auth-header-title">
+                <div style={{ position:'relative', overflow:'hidden', borderRadius:'11px', border:'1px solid rgba(14,13,11,.09)', background:'white', boxShadow:'0 2px 10px rgba(14,13,11,.07)', padding:'6px 18px', textAlign:'center', maxWidth:'500px' }}>
+                  <div style={{ fontSize:'1.2rem', fontWeight:800, fontFamily:"'Fraunces',serif", letterSpacing:'-.03em', color:'#0e0d0b', lineHeight:1.1 }}>{title}</div>
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:'5px', marginTop:'2px' }}>
+                    <div style={{ height:'3px', width:'3px', borderRadius:'50%', background:'#cc5500' }} />
+                    <p style={{ fontSize:'0.55rem', fontWeight:700, fontFamily:"'Noto Sans Devanagari',sans-serif", color:'#7a7368', letterSpacing:'.07em', margin:0 }}>24×7 · सरल · सुरक्षित · सुविधाजनक</p>
+                    <div style={{ height:'3px', width:'3px', borderRadius:'50%', background:'#1b8f99' }} />
                   </div>
                 </div>
               </div>
             )}
-            <div style={{ flex:1, minHeight:0, display:'flex', alignItems:'center', overflow:'hidden' }}>
+            <div style={{ flex:1, minHeight:0, display:'flex', alignItems:'center', justifyContent: 'center', overflow:'hidden' }}>
               {children}
             </div>
           </div>
