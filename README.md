@@ -14,7 +14,7 @@
 
 <br/>
 
-<img src="https://readme-typing-svg.demolab.com?font=Libre+Baskerville&weight=600&size=18&duration=2000&pause=1000&color=FFA552&center=true&vCenter=true&width=750&lines=Smart+Janseva+—+Making+Governance+Simple,+Accessible,+and+Human" alt="Subtitle"/>
+<img src="https://readme-typing-svg.demolab.com?font=Libre+Baskerville&weight=600&size=18&duration=2000&pause=1000&color=FFA552&center=true&vCenter=true&width=750&lines=Smart+Janseva+%E2%80%94+Making+Governance+Simple%2C+Accessible%2C+and+Human" alt="Subtitle"/>
 
 <br/><br/>
 
@@ -669,7 +669,7 @@ For security vulnerabilities, please refer to [SECURITY.md](SECURITY.md) — **d
 
 <br/>
 
-*Smart Janseva — Making Governance Human Again.*
+*Smart Janseva — Governance Made Simple. Services Made Accessible.*
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:e67e22,50:c0392b,100:1a0000&height=140&section=footer" width="100%"/>
 </div>
