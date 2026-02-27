@@ -564,6 +564,7 @@ export default function KioskLayout({
 }) {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { time, date } = useClock();
   const { msg: toastMsg, show: showToast } = useToast();
 
@@ -995,58 +996,60 @@ export default function KioskLayout({
               backdropFilter: 'blur(20px)',
             }}
           >
-            <div>
-              <div
-                className="mb-3 flex items-center gap-[10px] text-[0.65rem] font-extrabold uppercase"
-                style={{ letterSpacing: '.2em', color: '#cc5500' }}
-              >
-                <span className="inline-block h-[2.5px] w-[22px] rounded-sm" style={{ background: '#cc5500' }} />
-                Digital Governance Kiosk
-              </div>
-
-              {title ? (
-                <div className="text-[2.1rem] font-extrabold leading-[1.05]" style={{ fontFamily: "'Fraunces',serif" }}>
-                  {title}
+            {(location.pathname === '/' || title) && (
+              <div>
+                <div
+                  className="mb-3 flex items-center gap-[10px] text-[0.65rem] font-extrabold uppercase"
+                  style={{ letterSpacing: '.2em', color: '#cc5500' }}
+                >
+                  <span className="inline-block h-[2.5px] w-[22px] rounded-sm" style={{ background: '#cc5500' }} />
+                  Digital Governance Kiosk
                 </div>
-              ) : (
-                <div className="flex flex-col">
-                  <h1
-                    className="text-[2.6rem] font-extrabold leading-[1.05]"
-                    style={{ 
-                      fontFamily: "'Fraunces',serif", 
-                      letterSpacing: '-.03em', 
-                      color: '#0e0d0b',
-                    }}
-                  >
-                    <span className="animate-typing-1 block overflow-hidden whitespace-nowrap border-r-4 border-transparent">
-                      Citizen
-                    </span>
-                    <span
-                      className="animate-typing-2 block overflow-hidden whitespace-nowrap border-r-4 border-transparent"
-                      style={{
-                        background:
-                          'linear-gradient(135deg,#cc5500 0%,#c8991e 50%,#1b8f99 100%)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
+
+                {title ? (
+                  <div className="text-[2.1rem] font-extrabold leading-[1.05]" style={{ fontFamily: "'Fraunces',serif" }}>
+                    {title}
+                  </div>
+                ) : (
+                  <div className="flex flex-col">
+                    <h1
+                      className="text-[2.6rem] font-extrabold leading-[1.05]"
+                      style={{ 
+                        fontFamily: "'Fraunces',serif", 
+                        letterSpacing: '-.03em', 
+                        color: '#0e0d0b',
                       }}
                     >
-                      Services
-                    </span>
-                    <span className="animate-typing-3 block overflow-hidden whitespace-nowrap border-r-4 border-transparent">
-                      At One Touch
-                    </span>
-                  </h1>
-                </div>
-              )}
+                      <span className="animate-typing-1 block overflow-hidden whitespace-nowrap border-r-4 border-transparent">
+                        Citizen
+                      </span>
+                      <span
+                        className="animate-typing-2 block overflow-hidden whitespace-nowrap border-r-4 border-transparent"
+                        style={{
+                          background:
+                            'linear-gradient(135deg,#cc5500 0%,#c8991e 50%,#1b8f99 100%)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text',
+                        }}
+                      >
+                        Services
+                      </span>
+                      <span className="animate-typing-3 block overflow-hidden whitespace-nowrap border-r-4 border-transparent">
+                        At One Touch
+                      </span>
+                    </h1>
+                  </div>
+                )}
 
-              <p
-                className="mt-2 text-[0.9rem] font-bold"
-                style={{ fontFamily: "'Noto Sans Devanagari',sans-serif", color: '#7a7368' }}
-              >
-                24×7 · सरल · सुरक्षित · सुविधाजनक
-              </p>
-            </div>
+                <p
+                  className="mt-2 text-[0.9rem] font-bold"
+                  style={{ fontFamily: "'Noto Sans Devanagari',sans-serif", color: '#7a7368' }}
+                >
+                  24×7 · सरल · सुरक्षित · सुविधाजनक
+                </p>
+              </div>
+            )}
 
             {user ? (
               <div className="flex flex-col gap-3">
