@@ -683,7 +683,37 @@ export default function KioskLayout({
 
   useEffect(() => {
     if (user) {
-      getUnreadNotificationsCount(user.id).then(setUnreadCount).catch(() => setUnreadCount(0));
+      const fetchCount = () => {
+        getUnreadNotificationsCount(user.id).then(setUnreadCount).catch(() => setUnreadCount(0));
+      };
+      
+      fetchCount();
+
+      // Custom event for when user manually clears notifications via Notifications page
+      window.addEventListener('sj-notif-change', fetchCount);
+
+      // Setup realtime listener for new notifications to update badge and play sound
+      const channel = supabase.channel('realtime:notifications')
+        .on('postgres_changes', 
+          { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` }, 
+          (payload) => {
+            fetchCount();
+            // Play notification sound
+            try {
+              const audio = new Audio('/notification.mp3');
+              audio.play().catch(console.error);
+            } catch (e) {
+              console.error('Audio play failed', e);
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+        window.removeEventListener('sj-notif-change', fetchCount);
+      };
+
     } else {
       setUnreadCount(0);
     }
@@ -914,13 +944,15 @@ export default function KioskLayout({
               </svg>
               {unreadCount > 0 && (
                 <span
-                  className="absolute right-[9px] top-[9px] h-2 w-2 rounded-full"
+                  className="absolute -right-[6px] -top-[6px] flex items-center justify-center rounded-full px-1.5 min-w-[20px] h-[20px] text-[10px] font-black text-white shadow-md animate-bounce"
                   style={{
                     background: '#cc5500',
-                    border: '2px solid #f5f1ea',
-                    animation: 'sj-notif-pulse 2s ease-in-out infinite',
+                    border: '2px solid #f5f1ea'
                   }}
-                />
+                  title={`${unreadCount} New notifications`}
+                >
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
               )}
             </button>
 

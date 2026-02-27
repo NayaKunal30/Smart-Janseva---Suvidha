@@ -363,34 +363,21 @@ export default function Login() {
       >
         {/* ── Left: Branding ── */}
         <div
-          className="sj-auth-brand-card"
+          className="sj-auth-brand-card group relative overflow-hidden"
           style={{
-            position: 'relative', overflow: 'hidden', borderRadius: '18px',
-            border: '1px solid rgba(14,13,11,.09)', background: 'white',
-            boxShadow: '0 2px 8px rgba(14,13,11,.05)', padding: '24px',
-            display: 'flex', flexDirection: 'column', justifyContent: 'center',
+            borderRadius: '28px',
+            background: 'transparent',
+            height: '100%',
+            boxShadow: '0 20px 50px rgba(14,13,11,0.15)',
+            transform: 'scale(1.01)'
           }}
         >
-          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <img src="/logo.png" alt="Smart Janseva" style={{ height: '56px', margin: '0 auto', marginBottom: '6px' }} />
-            <div className="brand-title" style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0e0d0b', marginBottom: '2px' }}>SMART JANSEVA</div>
-            <div className="brand-subtitle" style={{ fontSize: '0.8rem', fontWeight: 600, color: '#7a7368' }}>Government of India Digital Services</div>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {[
-              { icon: '🔒', title: 'Secure Authentication', desc: 'Encrypted & protected', bg: 'rgba(204,85,0,.1)' },
-              { icon: '📱', title: 'Multiple Options', desc: 'Phone & Email login', bg: 'rgba(14,94,101,.1)' },
-              { icon: '⚡', title: 'Quick Access', desc: 'Instant login', bg: 'rgba(168,120,32,.1)' },
-            ].map(f => (
-              <div key={f.title} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ height: '38px', width: '38px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', background: f.bg, fontSize: '1.1rem' }}>{f.icon}</div>
-                <div>
-                  <div className="feature-title" style={{ fontWeight: 800, fontSize: '0.88rem', color: '#0e0d0b' }}>{f.title}</div>
-                  <div className="feature-desc" style={{ fontSize: '0.74rem', color: '#7a7368' }}>{f.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <img 
+            src="/loginside.png" 
+            alt="Smart Janseva" 
+            className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#cc5500]/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
         </div>
 
         {/* ── Right: Form ── */}

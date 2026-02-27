@@ -153,14 +153,27 @@ export default function AdminAnnouncements() {
 
             <div className="bg-[#fafafc] rounded-[40px] border p-8 space-y-4" style={{ borderColor: 'rgba(14,13,11,.09)' }}>
                <h3 className="text-[0.8rem] font-black uppercase tracking-[0.2em] text-[#0e0d0b]/30">Active Bulletins</h3>
-               <div className="space-y-3">
-                 {announcements.slice(0, 3).map(ann => (
+               <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-hide">
+                 {announcements.map(ann => (
                    <div key={ann.id} className="p-4 bg-white rounded-2xl border border-[#0e0d0b]/05 flex justify-between items-center group">
                      <div>
                        <div className="text-[0.8rem] font-black text-[#0e0d0b]">{ann.title}</div>
                        <div className="text-[0.65rem] font-bold text-[#7a7368] uppercase">{ann.type} • {new Date(ann.created_at).toLocaleDateString()}</div>
                      </div>
-                     <button className="h-8 w-8 rounded-full bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+                     <button 
+                       onClick={async () => {
+                         try {
+                           const { error } = await supabase.from('announcements').delete().eq('id', ann.id);
+                           if (error) throw error;
+                           toast.success('Bulletin deleted successfully');
+                           loadData();
+                         } catch (err: any) {
+                           toast.error('Failed to delete bulletin: ' + err.message);
+                         }
+                       }}
+                       className="h-8 w-8 rounded-full flex items-center justify-center text-xl pb-1 bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                       title="Delete Bulletin"
+                     >×</button>
                    </div>
                  ))}
                </div>

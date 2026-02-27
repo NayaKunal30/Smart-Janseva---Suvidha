@@ -167,7 +167,7 @@ export default function AdminServices() {
         {/* Robust Custom Modal */}
         {showModal && selectedApp && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-             <div className="bg-white w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl flex flex-col p-8 animate-in zoom-in-95 duration-300">
+             <div className="bg-white w-full max-w-md rounded-[32px] overflow-y-auto max-h-[90vh] scrollbar-hide shadow-2xl flex flex-col p-8 animate-in zoom-in-95 duration-300">
                 <div className="flex justify-between items-start mb-6">
                   <div>
                     <h2 className="text-[1.3rem] font-black text-[#0e0d0b]">Application Review</h2>

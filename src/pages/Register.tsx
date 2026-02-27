@@ -359,27 +359,24 @@ export default function Register() {
         className="sj-auth-grid"
       >
         {/* ── Branding ── */}
-        <div style={{ ...cardStyle, padding:'24px', display:'flex', flexDirection:'column', justifyContent:'center' }} className="sj-auth-brand-card">
-          <div style={{ textAlign:'center', marginBottom:'16px' }}>
-            <img src="/logo.png" alt="National Emblem of India" style={{ height: '56px', margin: '0 auto', marginBottom: '6px' }} />
-            <div style={{ fontSize:'1.4rem', fontWeight:800, color:'#0e0d0b', marginBottom:'2px' }} className="sj-brand-title">SMART JANSEVA</div>
-            <div style={{ fontSize:'0.85rem', fontWeight:600, color:'#7a7368' }} className="sj-brand-sub">Government of India Digital Services</div>
-          </div>
-          <div style={{ display:'flex', flexDirection:'column', gap:'12px' }}>
-            {[
-              { icon:'🪪', title:'Secure Registration', desc:'Create account safely',         bg:'rgba(14,94,101,.1)' },
-              { icon:'👤', title:'Citizen & Admin',     desc:'Register as citizen or officer', bg:'rgba(204,85,0,.1)' },
-              { icon:'🏛️', title:'Access Services',     desc:'All services in one place',      bg:'rgba(168,120,32,.1)' },
-            ].map(f => (
-              <div key={f.title} style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-                <div style={{ height:'38px', width:'38px', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', borderRadius:'10px', background:f.bg, fontSize:'1.1rem' }}>{f.icon}</div>
-                <div>
-                  <div style={{ fontWeight:800, fontSize:'0.88rem', color:'#0e0d0b' }} className="sj-feat-title">{f.title}</div>
-                  <div style={{ fontSize:'0.74rem', color:'#7a7368' }} className="sj-feat-desc">{f.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div
+          className="sj-auth-brand-card group relative overflow-hidden"
+          style={{
+            ...cardStyle,
+            padding: 0,
+            borderRadius: '28px',
+            background: 'transparent',
+            height: '100%',
+            boxShadow: '0 20px 50px rgba(14,13,11,0.15)',
+            transform: 'scale(1.01)'
+          }}
+        >
+          <img 
+            src="/loginside.png" 
+            alt="Smart Janseva Registration" 
+            className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-tr from-[#cc5500]/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
         </div>
 
         {/* ── Form ── */}
