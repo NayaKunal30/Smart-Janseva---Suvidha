@@ -324,6 +324,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Initialize timer on mount or login
   useEffect(() => {
+    if (loading) return; // Don't do anything while auth is initializing
+    
     if (!user) {
       localStorage.removeItem('sj-session-expiry');
       setTimeLeft(0);
@@ -342,7 +344,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       resetTimer();
     }
-  }, [user]);
+  }, [user, loading, resetTimer]);
 
   // Countdown effect
   useEffect(() => {

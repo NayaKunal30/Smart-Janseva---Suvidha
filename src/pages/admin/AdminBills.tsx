@@ -7,6 +7,8 @@ export default function AdminBills() {
   const [users, setUsers] = useState<any[]>([]);
   const [bills, setBills] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [userSearch, setUserSearch] = useState('');
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [formData, setFormData] = useState({
     userId: '',
     amount: '',
@@ -80,12 +82,25 @@ export default function AdminBills() {
 
       toast.success('Official bill dispatched to citizen!');
       setFormData({ userId: '', amount: '', month: '', dueDate: '', serviceName: 'Water Supply', utilityType: 'water' });
+      setUserSearch('');
       loadBills();
     } catch (error: any) {
       console.error('Error creating bill:', error);
       toast.error('Failed to create bill: ' + error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this bill? This action cannot be undone.')) return;
+    try {
+      const { error } = await supabase.from('bills').delete().eq('id', id);
+      if (error) throw error;
+      toast.success('Bill deleted successfully');
+      loadBills();
+    } catch (error: any) {
+      toast.error('Failed to delete bill');
     }
   };
 
@@ -126,19 +141,52 @@ export default function AdminBills() {
                 <span className="text-lg">🧾</span> Issue New Bill
               </h2>
 
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <label className="text-[0.6rem] font-black uppercase tracking-widest text-[#7a7368] ml-1">Target Citizen</label>
-                <select
-                  value={formData.userId}
-                  onChange={(e) => setFormData(prev => ({ ...prev, userId: e.target.value }))}
-                  required
-                  className="w-full h-11 rounded-xl border bg-[#fafaf9] px-4 text-[0.8rem] font-bold outline-none border-[#0e0d0b]/10 focus:border-[#cc5500] transition-all appearance-none"
+                <div 
+                  className="relative" 
+                  tabIndex={0} 
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                      setTimeout(() => setShowUserDropdown(false), 200);
+                    }
+                  }}
                 >
-                  <option value="">Select citizen</option>
-                  {users.map(u => (
-                    <option key={u.id} value={u.id}>{u.full_name} ({u.email})</option>
-                  ))}
-                </select>
+                  <input
+                    type="text"
+                    placeholder="Search by name or email..."
+                    value={userSearch}
+                    onChange={(e) => {
+                      setUserSearch(e.target.value);
+                      setShowUserDropdown(true);
+                      setFormData(prev => ({ ...prev, userId: '' }));
+                    }}
+                    onFocus={() => setShowUserDropdown(true)}
+                    className="w-full h-11 rounded-xl border bg-[#fafaf9] px-4 text-[0.8rem] font-bold outline-none border-[#0e0d0b]/10 focus:border-[#cc5500] transition-all"
+                  />
+                  {showUserDropdown && (
+                    <div className="absolute top-12 left-0 right-0 max-h-56 overflow-y-auto bg-white border border-[#0e0d0b]/10 rounded-xl shadow-xl z-50 overflow-hidden divide-y divide-[#0e0d0b]/5">
+                      {users.filter(u => u.full_name?.toLowerCase().includes(userSearch.toLowerCase()) || u.email?.toLowerCase().includes(userSearch.toLowerCase())).length > 0 ? (
+                        users.filter(u => u.full_name?.toLowerCase().includes(userSearch.toLowerCase()) || u.email?.toLowerCase().includes(userSearch.toLowerCase())).map(u => (
+                          <div
+                            key={u.id}
+                            className="px-4 py-2.5 cursor-pointer hover:bg-orange-50/50 transition-colors"
+                            onClick={() => {
+                               setFormData(prev => ({ ...prev, userId: u.id }));
+                               setUserSearch(`${u.full_name} (${u.email})`);
+                               setShowUserDropdown(false);
+                            }}
+                          >
+                            <div className="font-bold text-[#0e0d0b] text-[0.8rem] leading-none mb-1">{u.full_name}</div>
+                            <div className="text-[0.65rem] font-semibold text-[#7a7368] truncate">{u.email}</div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="px-4 py-4 text-[0.75rem] text-[#7a7368] font-bold text-center">No citizens match your search</div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -228,6 +276,13 @@ export default function AdminBills() {
                       <span className={`px-2 py-0.5 rounded-full text-[0.55rem] font-black uppercase ${getStatusBadge(bill.status)}`}>
                         {bill.status}
                       </span>
+                      <button
+                        onClick={() => handleDelete(bill.id)}
+                        className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors border border-red-100"
+                        title="Delete Bill"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                      </button>
                     </div>
                   </div>
                 )) : (

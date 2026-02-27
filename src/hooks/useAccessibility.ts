@@ -32,6 +32,7 @@ export function useAccessibility() {
         const next = !seniorMode;
         setSeniorMode(next);
         localStorage.setItem('sj-senior-mode', next ? '1' : '0');
+        document.documentElement.classList.toggle('sj-senior-mode', next);
         window.dispatchEvent(new CustomEvent('sj-mode-change'));
         return next;
     }, [seniorMode]);
